@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskTango</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #ff6b6b;
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .input-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 12px;
+            width: 100%;
+            border: none;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        input {
+            background-color: #f0f0f0;
+            transition: background-color 0.3s;
+        }
+        input:focus {
+            background-color: #ffffff;
+            outline: none;
+            box-shadow: 0 0 0 2px #4ecdc4;
+        }
+        button {
+            background-color: #4ecdc4;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #45b7aa;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        #reminderList {
+            margin-top: 30px;
+        }
+        .reminder {
+            background-color: #ffffff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        .reminder:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .reminder-content {
+            flex-grow: 1;
+        }
+        .reminder strong {
+            color: #ff6b6b;
+            font-size: 1.1em;
+        }
+        .reminder button {
+            background-color: #ff9ff3;
+            padding: 8px 12px;
+            font-size: 0.9em;
+            width: auto;
+        }
+        .reminder button:hover {
+            background-color: #f368e0;
+        }
+        .clock {
+            font-size: 2em;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .quote {
+            font-size: 1.2em;
+            font-style: italic;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 TaskTango</h1>
+    <div class="clock" id="clock"></div>
+    <div class="quote" id="quote"></div>
+    <div class="input-container">
+        <input type="text" id="reminderInput" placeholder="Enter your task">
+        <input type="datetime-local" id="reminderTime">
+        <button onclick="addReminder()">Add Task</button>
+    </div>
+    <div id="reminderList"></div>
+
+    <script>
+        const quotes = [
+            "Believe you can and you're halfway there.",
+            "You are stronger than you think.",
+            "Act as if what you do makes a difference. It does.",
+            "Success is not final, failure is not fatal: It is the courage to continue that counts."
+        ];
+
+        function displayQuote() {
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById('quote').innerText = randomQuote;
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            document.getElementById('clock').innerText = timeString;
+        }
+
+        function addReminder() {
+            const reminderInput = document.getElementById('reminderInput');
+            const reminderTime = document.getElementById('reminderTime').value;
+            const reminderList = document.getElementById('reminderList');
+            const reminderText = reminderInput.value.trim();
+
+            if (reminderText && reminderTime) {
+                const listItem = document.createElement('div');
+                listItem.className = 'reminder';
+
+                const reminderContent = document.createElement('div');
+                reminderContent.className = 'reminder-content';
+                reminderContent.innerHTML = `<strong>${reminderText}</strong> at ${new Date(reminderTime).toLocaleString()}`;
+
+                const removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.onclick = () => {
+                    reminderList.removeChild(listItem);
+                };
+
+                listItem.appendChild(reminderContent);
+                listItem.appendChild(removeButton);
+                reminderList.appendChild(listItem);
+
+                setAlarm(reminderTime, reminderText);
+
+                reminderInput.value = '';
+                document.getElementById('reminderTime').value = '';
+            }
+        }
+
+        function setAlarm(time, text) {
+            const alarmDate = new Date(time);
+            const now = new Date();
+
+            const timeToAlarm = alarmDate.getTime() - now.getTime();
+            if (timeToAlarm >= 0) {
+                setTimeout(() => {
+                    alert(`Reminder: ${text}`);
+                }, timeToAlarm);
+            }
+        }
+
+        // Initialize clock and quote display
+        updateClock();
+        setInterval(updateClock, 1000);
+        displayQuote();
+        setInterval(displayQuote, 10000); // Update quote every 10 seconds
+    </script>
+</body>
+</html>
